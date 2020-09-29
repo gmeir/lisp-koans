@@ -52,7 +52,7 @@
 
 (define-test transposition
   ;; MAPCAR gives the function as many arguments as there are lists.
-  (flet ((transpose (lists) (Apply #'mapcar ____ lists)))
+  (flet ((transpose (lists) (apply #'mapcar #'list lists)))
     (let ((list '((1 2 3)
                   (4 5 6)
                   (7 8 9)))
@@ -60,38 +60,40 @@
                              (2 5 8)
                              (3 6 9))))
       (assert-equal transposed-list (transpose list))
-      (assert-equal  (transpose (transpose list))))
-    (assert-equal ____ (transpose '(("these" "making")
-                                    ("pretzels" "me")
-                                    ("are" "thirsty"))))))
+      (assert-equal list (transpose (transpose list))))
+    (assert-equal '(("these" "pretzels" "are")
+                    ("making" "me" "thirsty"))
+                  (transpose '(("these" "making")
+                               ("pretzels" "me")
+                               ("are" "thirsty"))))))
 
 (define-test reduce
   ;; The function REDUCE combines the elements of a list by applying a binary
   ;; function to the elements of a sequence from left to right.
   (assert-equal 15 (reduce #'+ '(1 2 3 4 5)))
-  (assert-equal ____ (reduce #'+ '(1 2 3 4)))
-  (assert-equal ____ (reduce #'expt '(1 2 3 4 5))))
+  (assert-equal 10 (reduce #'+ '(1 2 3 4)))
+  (assert-equal 1 (reduce #'expt '(1 2 3 4 5))))
 
 (define-test reduce-from-end
   ;; The :FROM-END keyword argument can be used to reduce from right to left.
   (let ((numbers '(1 2 3 4 5)))
-    (assert-equal ____ (reduce #'cons numbers))
-    (assert-equal ____ (reduce #'cons numbers :from-end t)))
+    (assert-equal '((((1 . 2) . 3) . 4) . 5) (reduce #'cons numbers))
+    (assert-equal '(1 . (2 . (3 . (4 . 5)))) (reduce #'cons numbers :from-end t)))
   (let ((numbers '(2 3 2)))
-    (assert-equal ____ (reduce #'expt numbers))
-    (assert-equal ____ (reduce #'expt numbers :from-end t))))
+    (assert-equal 64 (reduce #'expt numbers))
+    (assert-equal 512 (reduce #'expt numbers :from-end t))))
 
 (define-test reduce-initial-value
   ;; :INITIAL-VALUE can supply the initial value for the reduction.
   (let ((numbers '(1 2 3 4 5)))
-    (assert-equal ____ (reduce #'* numbers))
-    (assert-equal ____ (reduce #'* numbers :initial-value 0))
-    (assert-equal ____ (reduce #'* numbers :initial-value -1))))
+    (assert-equal 120 (reduce #'* numbers))
+    (assert-equal 0 (reduce #'* numbers :initial-value 0))
+    (assert-equal -120 (reduce #'* numbers :initial-value -1))))
 
 (define-test inner-product
   ;; MAPCAR and REDUCE are powerful when used together.
   ;; Fill in the blanks to produce a local function that computes an inner
   ;; product of two vectors.
-  (flet ((inner-product (x y) (reduce ____ (mapcar ____ x y))))
+  (flet ((inner-product (x y) (reduce #'+ (mapcar #'* x y))))
     (assert-equal 32 (inner-product '(1 2 3) '(4 5 6)))
     (assert-equal 310 (inner-product '(10 20 30) '(4 3 7)))))

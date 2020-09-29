@@ -50,7 +50,17 @@
 ;;; Your goal is to write the scoring function for Greed.
 
 (defun score (&rest dice)
-  ____)
+  (cond ((equal dice nil) 0)
+        ((equal dice '(1)) 100)
+        ((equal dice '(5)) 50)
+        ((= (length dice) 1) 0)
+        ((>= (count 1 dice) 3) (+ 1000 (apply #'score (remove 1 dice :count 3))))
+        ((>= (count 2 dice) 3) (+ 200 (apply #'score (remove 2 dice :count 3))))
+        ((>= (count 3 dice) 3) (+ 300 (apply #'score (remove 3 dice :count 3))))
+        ((>= (count 4 dice) 3) (+ 400 (apply #'score (remove 4 dice :count 3))))
+        ((>= (count 5 dice) 3) (+ 500 (apply #'score (remove 5 dice :count 3))))
+        ((>= (count 6 dice) 3) (+ 600 (apply #'score (remove 6 dice :count 3))))
+        (t (+ (apply #'score (list (car dice))) (apply #'score (cdr dice))))))
 
 (define-test score-of-an-empty-list-is-zero
   (assert-equal 0 (score)))
